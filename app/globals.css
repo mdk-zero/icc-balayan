@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+/**
+ * ICCBI brand tokens, sampled from the college seal in public/icc-logo.png:
+ * the process cyan of the rope ring, the royal blue and scarlet of the shield,
+ * the gold of the flame and wheat, on the white the seal is drawn on.
+ *
+ * `blue` is the shield's royal field; `sky` is the ring, used for surfaces and
+ * rules rather than small text (it sits at 2.6:1 on paper). `crest` is the
+ * shield's red, kept for one or two signals.
+ */
+@theme {
+  --color-paper: #f7fafc;
+  --color-linen: #e9f3fa;
+  --color-parchment: #d3e5f1;
+
+  --color-blue: #2b2b87;
+  --color-blue-deep: #1a1a5c;
+  --color-blue-mid: #3d3da8;
+
+  --color-sky: #00a9e8;
+  --color-crest: #d32029;
+
+  /* Deep enough to carry small text on paper (5.6:1); gold-soft is for navy. */
+  --color-gold: #8a5b0b;
+  --color-gold-soft: #f0bc55;
+
+  --color-ink: #101b2a;
+  --color-muted: #55677c;
+  --color-rule: #cadeeb;
+
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    color: inherit;
+  }
+
+  ::selection {
+    background: var(--color-crest);
+    color: var(--color-paper);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+}
+
+@layer components {
+  /* Display scale. Cormorant is drawn tall, so it needs a tighter leading than
+     a grotesque would at the same size. */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  .display-xl {
+    font-size: clamp(2.9rem, 6.1vw, 5.5rem);
+  }
+
+  .display-lg {
+    font-size: clamp(2.15rem, 4.1vw, 3.5rem);
+    line-height: 1.02;
+  }
+
+  .display-md {
+    font-size: clamp(1.7rem, 2.7vw, 2.45rem);
+    line-height: 1.08;
+  }
+
+  .display-sm {
+    font-size: clamp(1.3rem, 1.7vw, 1.6rem);
+    line-height: 1.18;
+  }
+
+  .standfirst {
+    font-size: clamp(1.05rem, 1.45vw, 1.25rem);
+    line-height: 1.65;
+    color: var(--color-muted);
+    text-wrap: pretty;
+  }
+
+  /* Used only for structural labels: table heads, the utility strip, footer
+     furniture. Never as an eyebrow above a heading. */
+  .label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+  }
+
+  .link-line {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 100% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    padding-bottom: 2px;
+    transition: background-size 220ms ease, color 220ms ease;
+  }
+
+  .link-line:hover {
+    background-size: 0% 1px;
+    background-position: 100% 100%;
+    color: var(--color-blue-mid);
+  }
+
+  .card-line {
+    border: 1px solid var(--color-rule);
+    background: color-mix(in oklab, var(--color-paper) 80%, white);
+  }
+}
+
+/* One orchestrated entrance for the home page, not a reveal per section. */
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.settle {
+  animation: settle 900ms cubic-bezier(0.22, 0.68, 0.24, 1) both;
+}
+
+.settle-2 {
+  animation-delay: 120ms;
+}
+
+.settle-3 {
+  animation-delay: 240ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .settle,
+  .settle-2,
+  .settle-3 {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

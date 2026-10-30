@@ -1,128 +1,172 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageIntro } from "@/components/page-intro";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
-import { history, site } from "@/lib/site";
+import { PageHeader } from "@/components/page-header";
+import { links, site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "The mission, vision and history of Immaculate Conception College of Balayan, Inc. — founded in 1935 and run by the Augustinian Recollect Sisters.",
+    "Immaculate Conception College of Balayan, Inc.: a school of the Augustinian Recollect Sisters on Plaza Mabini since 1935.",
 };
 
-const roman = ["I", "II", "III", "IV"];
+const index = [
+  {
+    heading: "About ICC",
+    pages: [
+      {
+        href: "/about/history",
+        label: "History",
+        line: "From the old convent in 1935 to four levels and nine college programs.",
+      },
+      {
+        href: "/about/mission-and-vision",
+        label: "Mission and vision",
+        line: "What the school is for, and its philosophy of education.",
+      },
+      {
+        href: "/about/core-values",
+        label: "Core values",
+        line: "Integrity, collaboration, compassion, benevolence and innovation.",
+      },
+      {
+        href: "/about/seal",
+        label: "School seal",
+        line: "What the shield, the cross and the motto stand for.",
+      },
+      {
+        href: "/about/accreditations",
+        label: "Accreditations",
+        line: "Which programs PAASCU, PACUCOA and TESDA have reviewed.",
+      },
+      {
+        href: "/about/icc-march",
+        label: "ICC March",
+        line: "Listen to the college's official march.",
+      },
+    ],
+  },
+  {
+    heading: "Inside ICCBI",
+    pages: [
+      {
+        href: "/inside-iccbi/administrators",
+        label: "Administrators since 1935",
+        line: "The A.R. Sisters who have led the school, in order.",
+      },
+      {
+        href: "/inside-iccbi/board-of-trustees",
+        label: "Board of Trustees",
+        line: "The General Council of the Augustinian Recollect Sisters.",
+      },
+      {
+        href: "/inside-iccbi/administrative-board",
+        label: "Administrative Board",
+        line: "The sisters who run the school day to day.",
+      },
+      {
+        href: "/inside-iccbi/directory",
+        label: "Directory",
+        line: "Where every office, laboratory and classroom is.",
+      },
+    ],
+  },
+];
 
 export default function AboutPage() {
   return (
     <>
-      <SiteHeader />
+      <PageHeader
+        current="/about"
+        title="A Catholic school on Plaza Mabini since 1935"
+        lead="Immaculate Conception College of Balayan, Inc. (ICCBI) is run by the Augustinian Recollect Sisters. It offers elementary, junior high, senior high and college programs, including STEM, ABM, HUMSS, Tech-Voc and bachelor's degrees."
+      />
 
-      <main id="main" className="flex-1">
-        <PageIntro
-          title="A Catholic school on Plaza Mabini, since 1935."
-          lead="Immaculate Conception College of Balayan, Inc. teaches from Grade 1 through college. It was founded by a parish priest, built by the Augustinian Recollect Sisters, and has stayed on the same plaza for nine decades."
-          current="About"
-        />
+      <section aria-labelledby="statement" className="wrap py-16 lg:py-24">
+        <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
+          <h2 id="statement" className="type-section lg:col-span-3">
+            {site.statementLabels.statement}
+          </h2>
+          <div className="lg:col-span-9">
+            <p className="max-w-[30ch] font-text text-[clamp(1.6rem,1.2rem+1.5vw,2.5rem)] leading-[1.3] text-royal">
+              {site.mission}
+            </p>
+            <Link href="/about/mission-and-vision" className="link type-ui mt-8 inline-block font-[600]">
+              Read the mission, vision and philosophy of education
+            </Link>
+          </div>
+        </div>
+      </section>
 
-        {/* Mission and vision */}
-        <section className="border-b border-rule">
-          <div className="mx-auto max-w-[1280px] px-6 py-16 lg:px-10 lg:py-20">
-            <div className="grid gap-6 lg:grid-cols-12 lg:gap-10">
-              <h2 className="display display-md text-ink lg:col-span-3">
-                Our mission
-              </h2>
-              <p className="font-display text-[1.75rem] leading-[1.3] text-ink lg:col-span-9 lg:text-[2.1rem]">
-                {site.mission}
-              </p>
-            </div>
-
-            <div className="mt-16 grid gap-8 border-t border-rule pt-16 lg:grid-cols-12 lg:gap-10">
-              <div className="lg:col-span-3">
-                <h2 className="display display-md text-ink">Our vision</h2>
-                <p className="mt-3 text-sm text-muted">{site.visionIntro}</p>
+      <section aria-labelledby="motto" className="bg-facade">
+        <div className="wrap grid gap-8 py-16 lg:grid-cols-12 lg:gap-10 lg:py-20">
+          <div className="lg:col-span-3">
+            <h2 id="motto" className="type-section">
+              Motto
+            </h2>
+            <p className="mt-3 max-w-[30ch] text-slate">
+              Written on the ribbons around the shield of the college seal.
+            </p>
+          </div>
+          <dl className="grid grid-cols-3 gap-4 lg:col-span-9">
+            {site.motto.map((word) => (
+              <div key={word.latin} className="trim pt-4">
+                <dt className="font-display text-[clamp(2rem,6vw,4.5rem)] font-[800] uppercase leading-none text-royal">
+                  {word.latin}
+                </dt>
+                <dd className="type-ui mt-2 text-slate">{word.english}</dd>
               </div>
-              <ol className="grid gap-x-10 sm:grid-cols-2 lg:col-span-9">
-                {site.commitments.map((commitment, index) => (
-                  <li
-                    key={commitment}
-                    className="flex gap-5 border-t border-gold/40 py-5"
-                  >
-                    <span className="w-7 shrink-0 font-display text-lg leading-7 text-gold">
-                      {roman[index]}
-                    </span>
-                    <span className="text-[0.98rem] leading-relaxed text-ink/85">
-                      {commitment}
-                    </span>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      <section aria-labelledby="sisters" className="wrap py-16 lg:py-24">
+        <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
+          <h2 id="sisters" className="type-section lg:col-span-3">
+            The A.R. Sisters
+          </h2>
+          <div className="prose-block max-w-[62ch] text-slate lg:col-span-7">
+            <p>
+              In 1935, Reverend Father Aniceto Cordero founded the school with the
+              approval of the Bishop of Lipa and ceded the old convent to the
+              Augustinian Recollect Sisters, whom he invited to run it.
+            </p>
+            <p>
+              The sisters have run the school ever since. The congregation&rsquo;s
+              General Council sits as ICC&rsquo;s Board of Trustees, and the
+              Talangpaz Building carries the name of its foundresses, Mother Dionisia
+              and Mother Cecilia Rosa Talangpaz.
+            </p>
+            <p>
+              <a href={links.ars} className="link type-ui font-[600]">
+                The Augustinian Recollect Sisters
+              </a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <nav aria-label="About ICC pages" className="border-t border-facade-line bg-facade-pale">
+        <div className="wrap grid gap-14 py-16 lg:grid-cols-12 lg:gap-10 lg:py-20">
+          {index.map((group) => (
+            <div key={group.heading} className={group.heading === "About ICC" ? "lg:col-span-7" : "lg:col-span-5"}>
+              <h2 className="type-section">{group.heading}</h2>
+              <ul className={`mt-6 grid gap-x-10 ${group.pages.length > 4 ? "sm:grid-cols-2" : ""}`}>
+                {group.pages.map((page) => (
+                  <li key={page.href} className="trim">
+                    <Link href={page.href} className="group block pb-6 pt-4">
+                      <span className="type-sub block decoration-2 underline-offset-4 group-hover:underline">
+                        {page.label}
+                      </span>
+                      <span className="mt-1.5 block text-slate">{page.line}</span>
+                    </Link>
                   </li>
                 ))}
-              </ol>
+              </ul>
             </div>
-          </div>
-        </section>
-
-        {/* History */}
-        <section id="history" className="scroll-mt-32 border-b border-rule">
-          <div className="mx-auto max-w-[1280px] px-6 py-16 lg:px-10 lg:py-24">
-            <div className="grid gap-6 lg:grid-cols-12">
-              <div className="lg:col-span-3">
-                <h2 className="display display-md text-ink">Our history</h2>
-                <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted">
-                  From a convent school on the plaza to four levels and nine
-                  college programmes.
-                </p>
-              </div>
-
-              <ol className="lg:col-span-9">
-                {history.map((milestone) => (
-                  <li
-                    key={milestone.year}
-                    className="grid gap-2 border-t border-rule py-8 md:grid-cols-12 md:gap-8"
-                  >
-                    <p className="font-display text-2xl leading-tight text-gold md:col-span-2">
-                      {milestone.year}
-                    </p>
-                    <h3 className="font-display text-xl text-ink md:col-span-3">
-                      {milestone.title}
-                    </h3>
-                    <p className="text-[0.95rem] leading-relaxed text-muted md:col-span-7">
-                      {milestone.body}
-                    </p>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
-        </section>
-
-        {/* Invitation */}
-        <section className="bg-linen/50">
-          <div className="mx-auto flex max-w-[1280px] flex-col gap-8 px-6 py-14 lg:flex-row lg:items-end lg:justify-between lg:px-10 lg:py-16">
-            <div>
-              <h2 className="display display-md max-w-xl text-ink">
-                The best way to understand the school is to stand on the plaza.
-              </h2>
-              <p className="mt-4 max-w-xl text-muted">
-                Visitors are welcome at Plaza Mabini. Call the office ahead so
-                someone can show you the campus.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
-              <Link
-                href="/contact"
-                className="bg-blue px-6 py-3.5 text-sm font-medium tracking-wide text-paper transition-colors hover:bg-blue-mid"
-              >
-                Plan a visit
-              </Link>
-              <Link href="/admissions" className="link-line text-sm text-ink">
-                Admissions
-              </Link>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <SiteFooter />
+          ))}
+        </div>
+      </nav>
     </>
   );
 }

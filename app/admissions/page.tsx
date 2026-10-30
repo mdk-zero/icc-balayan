@@ -1,188 +1,152 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageIntro } from "@/components/page-intro";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
-import { site } from "@/lib/site";
+import { PageHeader } from "@/components/page-header";
+import { enrollment, links, requirements, site, tel } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Admissions",
   description:
-    "How to apply to Immaculate Conception College of Balayan — the four steps, the documents to prepare for basic education, senior high and college, and who to contact.",
+    "How to enroll at Immaculate Conception College of Balayan: the CK Link portal, the steps for new and returning students, and what to bring.",
 };
 
-const steps = [
-  {
-    title: "Inquire",
-    body: "Call or email the office, or message the official Facebook page. Tell us the level you are applying for, and the strand or programme if you already know it.",
-  },
-  {
-    title: "Prepare your records",
-    body: "Gather the documents for your level from the checklist below. Transferees should also request an honorable dismissal from their previous school.",
-  },
-  {
-    title: "Visit the campus",
-    body: "Submit your documents at the office on Plaza Mabini. Applicants may be scheduled for an interview or an entrance assessment, depending on the level.",
-  },
-  {
-    title: "Enroll",
-    body: "Complete the enrollment form and settle the fees at the cashier to secure your slot for the school year.",
-  },
-];
-
-const requirements = [
-  {
-    level: "Elementary and Junior High",
-    items: [
-      "Report card (Form 138)",
-      "PSA birth certificate",
-      "Certificate of good moral character",
-      "Four 2×2 ID photographs",
-      "Honorable dismissal, for transferees",
-    ],
-  },
-  {
-    level: "Senior High School",
-    items: [
-      "Report card (Form 138) or certificate of completion",
-      "PSA birth certificate",
-      "Certificate of good moral character",
-      "Four 2×2 ID photographs",
-    ],
-  },
-  {
-    level: "College",
-    items: [
-      "Report card (Form 138)",
-      "PSA birth certificate",
-      "Certificate of good moral character",
-      "Four 2×2 ID photographs",
-      "Honorable dismissal and transcript, for transferees",
-    ],
-  },
-];
+function Steps({ id, title, intro, steps }: { id: string; title: string; intro: string; steps: string[] }) {
+  return (
+    <section aria-labelledby={id} className="trim pt-5">
+      <h2 id={id} className="type-section">
+        {title}
+      </h2>
+      <p className="mt-3 max-w-[44ch] text-slate">{intro}</p>
+      <ol className="mt-6">
+        {steps.map((step, index) => (
+          <li key={step} className="row-line grid grid-cols-[2.75rem_1fr] py-4">
+            <span className="font-display text-[1.75rem] font-[800] leading-none tabular-nums text-royal">
+              {index + 1}
+            </span>
+            <span className="text-slate">{step}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
 
 export default function AdmissionsPage() {
   return (
     <>
-      <SiteHeader />
+      <PageHeader
+        current="/admissions"
+        title="How to enroll at ICC"
+        lead="Enrollment runs through the CK Link portal and two offices on campus. New students pre-register online first; returning students start at the Registrar's Office."
+      >
+        <div className="flex flex-wrap gap-3">
+          <a href={links.portal} className="btn">
+            Open the enrollment portal
+          </a>
+          <a href={tel(site.phone)} className="btn-line">
+            Call {site.phone}
+          </a>
+        </div>
+      </PageHeader>
 
-      <main id="main" className="flex-1">
-        <PageIntro
-          title="Begin at ICCBI."
-          lead="Admission runs on documents and a conversation. Here is the order of things, what to bring, and who to ask when something is unclear."
-          current="Admissions"
-        >
-          <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
-            <a
-              href={`tel:${site.phone.replace(/[^0-9+]/g, "")}`}
-              className="bg-blue px-6 py-3.5 text-sm font-medium tracking-wide text-paper transition-colors hover:bg-blue-mid"
-            >
-              Call the office
-            </a>
-            <a href={`mailto:${site.email}`} className="link-line text-sm text-ink">
-              {site.email}
-            </a>
+      <div className="wrap grid gap-14 py-14 lg:grid-cols-2 lg:gap-12 lg:py-20">
+        <Steps
+          id="new"
+          title="New students"
+          intro="Applying to ICC for the first time, including transferees."
+          steps={enrollment.newStudents}
+        />
+        <Steps
+          id="returning"
+          title="Returning students"
+          intro="Already enrolled at ICC and moving up a grade or year level."
+          steps={enrollment.returningStudents}
+        />
+      </div>
+
+      <section aria-labelledby="where-h" className="bg-facade">
+        <div className="wrap grid gap-8 py-14 lg:grid-cols-12 lg:gap-10 lg:py-16">
+          <div className="lg:col-span-4">
+            <h2 id="where-h" className="type-section">
+              Where to go
+            </h2>
+            <Link href="/inside-iccbi/directory" className="link type-ui mt-4 inline-block font-[600]">
+              Campus directory
+            </Link>
           </div>
-        </PageIntro>
-
-        {/* The sequence */}
-        <section className="border-b border-rule">
-          <div className="mx-auto max-w-[1280px] px-6 py-16 lg:px-10 lg:py-20">
-            <h2 className="display display-lg text-ink">The process, in order</h2>
-            <ol className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-              {steps.map((step, index) => (
-                <li key={step.title} className="border-t border-gold/50 pt-5">
-                  <p className="font-display text-3xl leading-none text-gold">
-                    {String(index + 1).padStart(2, "0")}
-                  </p>
-                  <h3 className="mt-3 font-display text-xl text-ink">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">{step.body}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        {/* Requirements */}
-        <section className="border-b border-rule bg-linen/40">
-          <div className="mx-auto max-w-[1280px] px-6 py-16 lg:px-10 lg:py-20">
-            <div className="flex flex-wrap items-end justify-between gap-6">
-              <div>
-                <h2 className="display display-lg text-ink">What to bring</h2>
-                <p className="mt-3 max-w-xl text-muted">
-                  The same four documents cover most applicants; the level decides
-                  what else is asked for.
-                </p>
-              </div>
-              <p className="max-w-sm text-sm leading-relaxed text-muted">
-                Requirements are set each school year. Confirm the current
-                checklist with the office before your visit.
-              </p>
+          <dl className="grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:col-span-8">
+            <div className="trim pt-4">
+              <dt className="type-sub">Registrar&rsquo;s Office</dt>
+              <dd className="mt-2 text-slate">Old Building, College Department</dd>
             </div>
-
-            <div className="mt-12 grid gap-10 md:grid-cols-3">
-              {requirements.map((group) => (
-                <div key={group.level} className="border-t border-rule pt-5">
-                  <h3 className="font-display text-xl text-ink">{group.level}</h3>
-                  <ul className="mt-4 space-y-2.5">
-                    {group.items.map((item) => (
-                      <li
-                        key={item}
-                        className="flex gap-3 text-sm leading-relaxed text-muted"
-                      >
-                        <span aria-hidden className="mt-2 h-1 w-1 shrink-0 bg-gold" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+            <div className="trim pt-4">
+              <dt className="type-sub">Treasurer&rsquo;s Office</dt>
+              <dd className="mt-2 text-slate">Talangpaz Building, 1st floor</dd>
             </div>
-          </div>
-        </section>
+          </dl>
+        </div>
+      </section>
 
-        {/* Contact */}
-        <section className="bg-blue text-paper">
-          <div className="mx-auto grid max-w-[1280px] gap-10 px-6 py-16 lg:grid-cols-12 lg:px-10 lg:py-20">
-            <div className="lg:col-span-6">
-              <h2 className="display display-md text-paper">
-                Ask before you travel.
-              </h2>
-              <p className="mt-5 max-w-md text-sm leading-relaxed text-paper/65">
-                A short call settles most questions — which documents are current,
-                whether a slot is open, and when the office is best visited.
-              </p>
-              <Link
-                href="/contact"
-                className="mt-7 inline-block border border-gold/60 px-6 py-3 text-sm text-gold-soft transition-colors hover:bg-gold/10"
-              >
-                Send a message
-              </Link>
+      <section aria-labelledby="bring-h" className="wrap py-14 lg:py-20">
+        <div className="grid gap-6 lg:grid-cols-12 lg:gap-10">
+          <div className="lg:col-span-4">
+            <h2 id="bring-h" className="type-section">
+              What to bring
+            </h2>
+            <p className="mt-3 max-w-[34ch] text-slate">
+              The Registrar&rsquo;s Office sets the list for each school year. Call
+              ahead to confirm it before your visit.
+            </p>
+          </div>
+          <div className="grid gap-10 sm:grid-cols-3 lg:col-span-8">
+            {requirements.map((group) => (
+              <div key={group.level} className="trim pt-4">
+                <h3 className="type-sub">{group.level}</h3>
+                <ul className="mt-3">
+                  {group.items.map((item) => (
+                    <li key={item} className="type-ui row-line py-2.5 text-slate first:border-0">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="ask-h" className="border-t border-facade-line bg-facade-pale">
+        <div className="wrap grid gap-8 py-14 lg:grid-cols-12 lg:gap-10 lg:py-16">
+          <h2 id="ask-h" className="type-section lg:col-span-4">
+            Questions before you apply
+          </h2>
+          <dl className="grid gap-x-10 gap-y-5 sm:grid-cols-3 lg:col-span-8">
+            <div>
+              <dt className="type-small text-slate-soft">Telephone</dt>
+              <dd className="mt-1">
+                <a href={tel(site.phone)} className="link type-ui font-[600]">
+                  {site.phone}
+                </a>
+              </dd>
             </div>
-            <dl className="lg:col-span-5 lg:col-start-8">
-              <div className="border-t border-paper/15 py-4">
-                <dt className="label text-gold-soft">Telephone</dt>
-                <dd className="mt-1 text-paper">{site.phone}</dd>
-              </div>
-              <div className="border-t border-paper/15 py-4">
-                <dt className="label text-gold-soft">Telefax</dt>
-                <dd className="mt-1 text-paper">{site.fax}</dd>
-              </div>
-              <div className="border-t border-paper/15 py-4">
-                <dt className="label text-gold-soft">Email</dt>
-                <dd className="mt-1 break-words text-paper">{site.email}</dd>
-              </div>
-              <div className="border-y border-paper/15 py-4">
-                <dt className="label text-gold-soft">Office</dt>
-                <dd className="mt-1 leading-relaxed text-paper">{site.address}</dd>
-              </div>
-            </dl>
-          </div>
-        </section>
-      </main>
-
-      <SiteFooter />
+            <div>
+              <dt className="type-small text-slate-soft">Email</dt>
+              <dd className="mt-1 break-words">
+                <a href={`mailto:${site.email}`} className="link type-ui font-[600]">
+                  {site.email}
+                </a>
+              </dd>
+            </div>
+            <div>
+              <dt className="type-small text-slate-soft">Facebook</dt>
+              <dd className="mt-1">
+                <a href={links.facebook} className="link type-ui font-[600]">
+                  ICCBalayanIncOfficial
+                </a>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </section>
     </>
   );
 }

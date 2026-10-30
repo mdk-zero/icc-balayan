@@ -1,50 +1,48 @@
 @import "tailwindcss";
 
 /**
- * ICCBI brand tokens, sampled from the college seal in public/icc-logo.png:
- * the process cyan of the rope ring, the royal blue and scarlet of the shield,
- * the gold of the flame and wheat, on the white the seal is drawn on.
+ * ICCBI tokens, sampled from the campus itself: the powder blue the buildings
+ * on Plaza Mabini are painted, the dark frames of their windows, and the royal
+ * blue and red of the shield on the college seal.
  *
- * `blue` is the shield's royal field; `sky` is the ring, used for surfaces and
- * rules rather than small text (it sits at 2.6:1 on paper). `crest` is the
- * shield's red, kept for one or two signals.
+ * `facade` is a surface colour. Text on it is `royal` (5.8:1) or `slate`
+ * (7.5:1), never `slate-soft`, which only passes on white and `facade-pale`.
+ * `crest` is a signal (the current page), not a decoration.
  */
 @theme {
-  --color-paper: #f7fafc;
-  --color-linen: #e9f3fa;
-  --color-parchment: #d3e5f1;
+  --color-white: #ffffff;
+  --color-facade: #86c1ea;
+  --color-facade-pale: #e6f2fb;
+  --color-facade-line: #b9dbf3;
 
-  --color-blue: #2b2b87;
-  --color-blue-deep: #1a1a5c;
-  --color-blue-mid: #3d3da8;
+  --color-royal: #2e2e8c;
+  --color-royal-deep: #22226b;
 
-  --color-sky: #00a9e8;
-  --color-crest: #d32029;
+  --color-slate: #1f2a3d;
+  --color-slate-soft: #4a5870;
 
-  /* Deep enough to carry small text on paper (5.6:1); gold-soft is for navy. */
-  --color-gold: #8a5b0b;
-  --color-gold-soft: #f0bc55;
+  --color-crest: #e01f29;
 
-  --color-ink: #101b2a;
-  --color-muted: #55677c;
-  --color-rule: #cadeeb;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
-  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
-  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sofia-xc), "Arial Narrow", sans-serif;
+  --font-ui: var(--font-sofia), ui-sans-serif, system-ui, sans-serif;
+  --font-text: var(--font-literata), Georgia, serif;
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
     -webkit-text-size-adjust: 100%;
   }
 
   body {
-    background: var(--color-paper);
-    color: var(--color-ink);
-    font-family: var(--font-sans);
-    font-size: 1rem;
-    line-height: 1.65;
+    background: var(--color-white);
+    color: var(--color-slate);
+    font-family: var(--font-text);
+    font-size: clamp(1.0625rem, 1rem + 0.2vw, 1.125rem);
+    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -54,94 +52,212 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    font-weight: 500;
-    color: inherit;
+    color: var(--color-royal);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 
   ::selection {
-    background: var(--color-crest);
-    color: var(--color-paper);
+    background: var(--color-royal);
+    color: var(--color-white);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-gold);
+    outline: 3px solid var(--color-royal);
     outline-offset: 3px;
-    border-radius: 1px;
+    border-radius: 2px;
+  }
+
+  .on-dark :focus-visible {
+    outline-color: var(--color-white);
   }
 }
 
 @layer components {
-  /* Display scale. Cormorant is drawn tall, so it needs a tighter leading than
-     a grotesque would at the same size. */
-  .display {
+  .wrap {
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+
+  @media (min-width: 40rem) {
+    .wrap {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .wrap {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  /* Display scale. Sofia Sans Extra Condensed is narrow and tall, so it is set
+     larger and tighter than a normal-width face would be at the same rank. */
+  .type-hero {
     font-family: var(--font-display);
-    font-weight: 500;
-    line-height: 0.98;
-    letter-spacing: -0.015em;
-    text-wrap: balance;
-  }
-
-  .display-xl {
-    font-size: clamp(2.9rem, 6.1vw, 5.5rem);
-  }
-
-  .display-lg {
-    font-size: clamp(2.15rem, 4.1vw, 3.5rem);
-    line-height: 1.02;
-  }
-
-  .display-md {
-    font-size: clamp(1.7rem, 2.7vw, 2.45rem);
-    line-height: 1.08;
-  }
-
-  .display-sm {
-    font-size: clamp(1.3rem, 1.7vw, 1.6rem);
-    line-height: 1.18;
-  }
-
-  .standfirst {
-    font-size: clamp(1.05rem, 1.45vw, 1.25rem);
-    line-height: 1.65;
-    color: var(--color-muted);
-    text-wrap: pretty;
-  }
-
-  /* Used only for structural labels: table heads, the utility strip, footer
-     furniture. Never as an eyebrow above a heading. */
-  .label {
-    font-size: 0.6875rem;
-    font-weight: 500;
-    letter-spacing: 0.17em;
+    font-weight: 850;
+    font-size: clamp(3.4rem, 10.5vw, 9.25rem);
+    line-height: 0.84;
+    letter-spacing: -0.01em;
     text-transform: uppercase;
   }
 
-  .link-line {
-    background-image: linear-gradient(currentColor, currentColor);
-    background-size: 100% 1px;
-    background-position: 0 100%;
-    background-repeat: no-repeat;
-    padding-bottom: 2px;
-    transition: background-size 220ms ease, color 220ms ease;
+  .type-title {
+    font-family: var(--font-display);
+    font-weight: 780;
+    font-size: clamp(2.75rem, 6.2vw, 5.25rem);
+    line-height: 0.92;
+    letter-spacing: -0.012em;
   }
 
-  .link-line:hover {
-    background-size: 0% 1px;
-    background-position: 100% 100%;
-    color: var(--color-blue-mid);
+  .type-section {
+    font-family: var(--font-display);
+    font-weight: 750;
+    font-size: clamp(2.125rem, 3.8vw, 3.25rem);
+    line-height: 0.98;
+    letter-spacing: -0.008em;
   }
 
-  .card-line {
-    border: 1px solid var(--color-rule);
-    background: color-mix(in oklab, var(--color-paper) 80%, white);
+  .type-sub {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.5rem, 2.1vw, 1.875rem);
+    line-height: 1.05;
+  }
+
+  .type-item {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: 1.375rem;
+    line-height: 1.15;
+  }
+
+  .type-lead {
+    font-family: var(--font-text);
+    font-size: clamp(1.1875rem, 1.05rem + 0.45vw, 1.3125rem);
+    line-height: 1.6;
+  }
+
+  .type-ui {
+    font-family: var(--font-ui);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  .type-small {
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .prose-block > * + * {
+    margin-top: 1em;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.75rem 1.375rem;
+    border-radius: 4px;
+    background: var(--color-royal);
+    color: var(--color-white);
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    font-weight: 650;
+    line-height: 1.2;
+    transition: background-color 160ms ease;
+  }
+
+  .btn:hover {
+    background: var(--color-royal-deep);
+  }
+
+  .btn-line {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0.75rem 1.375rem;
+    border-radius: 4px;
+    border: 2px solid currentColor;
+    color: var(--color-royal);
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    font-weight: 650;
+    line-height: 1.2;
+    transition: background-color 160ms ease;
+  }
+
+  .btn-line:hover {
+    background: color-mix(in oklab, var(--color-royal) 8%, transparent);
+  }
+
+  .link {
+    color: var(--color-royal);
+    text-decoration-line: underline;
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--color-facade);
+    text-underline-offset: 0.22em;
+    transition: text-decoration-color 160ms ease;
+  }
+
+  .link:hover {
+    text-decoration-color: var(--color-royal);
+  }
+
+  /* The thick royal rule is the building's floor band; it separates major
+     groups. The pale line separates rows inside a group. */
+  .trim {
+    border-top: 3px solid var(--color-royal);
+  }
+
+  .row-line {
+    border-top: 1px solid var(--color-facade-line);
+  }
+
+  .field {
+    display: block;
+    width: 100%;
+    min-height: 3rem;
+    margin-top: 0.375rem;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--color-facade-line);
+    border-bottom: 2px solid var(--color-royal);
+    border-radius: 4px 4px 0 0;
+    background: var(--color-facade-pale);
+    color: var(--color-slate);
+    font-family: var(--font-ui);
+    font-size: 1rem;
+  }
+
+  .field:focus {
+    outline: none;
+    background: var(--color-white);
+    border-color: var(--color-royal);
+    box-shadow: 0 0 0 1px var(--color-royal);
+  }
+
+  .field-label {
+    font-family: var(--font-ui);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-slate);
   }
 }
 
-/* One orchestrated entrance for the home page, not a reveal per section. */
-@keyframes settle {
+/* The one load moment on the site: the name settles in over the building. */
+@keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(0.35em);
   }
   to {
     opacity: 1;
@@ -149,16 +265,170 @@
   }
 }
 
-.settle {
-  animation: settle 900ms cubic-bezier(0.22, 0.68, 0.24, 1) both;
+.rise-line {
+  display: block;
+  animation: rise 700ms var(--ease-out) both;
 }
 
-.settle-2 {
-  animation-delay: 120ms;
+/* Header dropdowns open from their button: a short fade and drop. */
+.menu-panel {
+  box-shadow: 0 18px 32px -18px rgb(46 46 140 / 0.35);
+  transform-origin: top left;
+  transition:
+    opacity 160ms var(--ease-out),
+    transform 160ms var(--ease-out),
+    visibility 0s linear 160ms;
 }
 
-.settle-3 {
-  animation-delay: 240ms;
+.menu-panel[data-open="false"] {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-4px) scale(0.98);
+}
+
+.menu-panel[data-open="true"] {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition-delay: 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-panel[data-open="false"] {
+    transform: none;
+  }
+}
+
+/* Facilities photo viewer: fades and settles in from the photo grid. */
+@keyframes photo-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.photo-dialog[open] {
+  animation: photo-in 220ms var(--ease-out);
+}
+
+.photo-dialog[open]::backdrop {
+  animation: fade-in 220ms var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo-dialog[open] {
+    animation-name: fade-in;
+  }
+}
+
+/* The ICC March seek bar: the ruler underneath is drawn by the component, so
+   the range input only shows its thumb. */
+.march-seek {
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.march-seek:disabled {
+  cursor: default;
+}
+
+.march-seek::-webkit-slider-runnable-track {
+  height: 100%;
+  background: transparent;
+}
+
+.march-seek::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 5px;
+  border: 3px solid var(--color-white);
+  border-radius: 50%;
+  background: var(--color-royal);
+  box-shadow: 0 0 0 1px var(--color-royal);
+}
+
+.march-seek::-moz-range-track {
+  background: transparent;
+}
+
+.march-seek::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 3px solid var(--color-white);
+  border-radius: 50%;
+  background: var(--color-royal);
+  box-shadow: 0 0 0 1px var(--color-royal);
+}
+
+.march-seek:disabled::-webkit-slider-thumb {
+  visibility: hidden;
+}
+
+.march-seek:disabled::-moz-range-thumb {
+  visibility: hidden;
+}
+
+/* Homepage hero: the building sinks at 30% of the scroll speed over the first
+   screen. Scroll-linked, so linear. components/hero-parallax.tsx covers
+   browsers without scroll timelines. */
+@keyframes hero-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 30vh, 0);
+  }
+}
+
+.hero-parallax {
+  will-change: transform;
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-parallax {
+      animation: hero-drift linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0px 100vh;
+    }
+  }
+}
+
+/* The photo's own sky dissolves into the hero's pale sky, so its top edge
+   never shows, even when the parallax lowers it. On wide screens the text
+   sits over the left of the photo too, so the building also fades out there. */
+.hero-building {
+  mask-image: linear-gradient(to bottom, transparent, #000 30%);
+}
+
+@media (min-width: 64rem) {
+  .hero-building {
+    mask-image:
+      linear-gradient(to right, transparent 22%, #000 72%),
+      linear-gradient(to bottom, transparent, #000 30%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+}
+
+.rise-line:nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.rise-line:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.rise-line:nth-child(4) {
+  animation-delay: 210ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -166,9 +436,7 @@
     scroll-behavior: auto;
   }
 
-  .settle,
-  .settle-2,
-  .settle-3 {
+  .rise-line {
     animation: none;
   }
 
@@ -176,7 +444,5 @@
   *::before,
   *::after {
     transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
   }
 }

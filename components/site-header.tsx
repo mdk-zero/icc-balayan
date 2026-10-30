@@ -3,8 +3,128 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { nav, site } from "@/lib/site";
+import { useEffect, useId, useRef, useState } from "react";
+import { nav, type NavSection } from "@/lib/site";
+
+function inSection(pathname: string, section: NavSection) {
+  const hrefs = [section.href, ...(section.children ?? []).map((child) => child.href)].filter(
+    (href): href is string => Boolean(href),
+  );
+  return hrefs.some((href) => pathname === href || pathname.startsWith(`${href}/`));
+}
+
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 12 12"
+      className={`h-3 w-3 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+    >
+      <path d="M2 4.5 6 8l4-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+/**
+ * A disclosure menu: opens on click or tap, and on hover for a mouse. Escape
+ * or a click elsewhere closes it and returns focus to the button.
+ */
+function Dropdown({ section, pathname }: { section: NavSection; pathname: string }) {
+  const [open, setOpen] = useState(false);
+  const panelId = useId();
+  const rootRef = useRef<HTMLLIElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const closeTimer = useRef<number | undefined>(undefined);
+  const active = inSection(pathname, section);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        buttonRef.current?.focus();
+      }
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const hoverOpen = (event: React.PointerEvent) => {
+    if (event.pointerType !== "mouse") return;
+    window.clearTimeout(closeTimer.current);
+    setOpen(true);
+  };
+  const hoverClose = (event: React.PointerEvent) => {
+    if (event.pointerType !== "mouse") return;
+    closeTimer.current = window.setTimeout(() => setOpen(false), 140);
+  };
+
+  return (
+    <li
+      ref={rootRef}
+      className="relative"
+      onPointerEnter={hoverOpen}
+      onPointerLeave={hoverClose}
+      onBlur={(event) => {
+        if (!rootRef.current?.contains(event.relatedTarget as Node)) setOpen(false);
+      }}
+    >
+      <button
+        ref={buttonRef}
+        type="button"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((value) => !value)}
+        className={`relative flex items-center gap-1.5 px-3 py-2 font-[550] transition-colors hover:text-royal ${
+          active ? "text-royal" : "text-slate"
+        }`}
+      >
+        {section.label}
+        <Chevron open={open} />
+        {active ? (
+          <span aria-hidden className="absolute inset-x-3 -bottom-[1.1rem] h-[3px] bg-crest" />
+        ) : null}
+      </button>
+
+      <div
+        id={panelId}
+        data-open={open}
+        className="menu-panel absolute left-0 top-full z-50 mt-[1.15rem] w-72 border border-t-[3px] border-facade-line border-t-royal bg-white py-2"
+      >
+        <ul>
+          {section.children?.map((child) => {
+            const current = pathname === child.href;
+            return (
+              <li key={child.href}>
+                <Link
+                  href={child.href}
+                  aria-current={current ? "page" : undefined}
+                  tabIndex={open ? undefined : -1}
+                  className={`block border-l-[3px] px-4 py-2.5 transition-colors hover:bg-facade-pale ${
+                    current ? "border-crest text-royal" : "border-transparent text-slate"
+                  }`}
+                >
+                  {child.label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </li>
+  );
+}
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -14,130 +134,140 @@ export function SiteHeader() {
     setOpen(false);
   }, [pathname]);
 
-  return (
-    <header className="sticky top-0 z-40 border-b border-rule bg-paper/95 backdrop-blur">
-      <div className="hidden border-b border-blue/20 bg-sky text-blue-deep md:block">
-        <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-6 px-10 py-2">
-          <p className="label text-[0.6rem] tracking-[0.14em]">{site.address}</p>
-          <div className="flex items-center gap-6">
-            <a
-              href={`tel:${site.phone.replace(/[^0-9+]/g, "")}`}
-              className="text-[0.72rem] tracking-wide underline-offset-4 transition-colors hover:underline"
-            >
-              {site.phone}
-            </a>
-            <a
-              href={`mailto:${site.email}`}
-              className="text-[0.72rem] tracking-wide underline-offset-4 transition-colors hover:underline"
-            >
-              {site.email}
-            </a>
-          </div>
-        </div>
-      </div>
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
-      <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-8 px-6 py-5 lg:px-10">
-        <Link
-          href="/"
-          className="group flex min-w-0 items-center gap-3.5"
-          aria-label={`${site.name} — home`}
-        >
+  return (
+    <header className="sticky top-0 z-40 border-b border-facade-line bg-white">
+      <div className="wrap flex h-[4.5rem] items-center justify-between gap-6 lg:h-20">
+        <Link href="/" className="flex min-w-0 items-center gap-3">
           <Image
             src="/icc-logo.png"
             alt=""
             width={444}
             height={445}
             priority
-            className="h-10 w-10 shrink-0 sm:h-12 sm:w-12"
+            className="h-11 w-11 shrink-0 lg:h-12 lg:w-12"
           />
-          <span>
-            <span className="block font-display text-[1.3rem] leading-none text-ink transition-colors group-hover:text-blue-mid lg:text-[1.38rem] xl:text-[1.5rem]">
+          <span className="min-w-0 font-display uppercase leading-[0.9] text-royal">
+            <span className="block text-[1.125rem] font-[800] tracking-[0.005em] sm:text-[1.3rem]">
               Immaculate Conception College
             </span>
-            <span className="mt-2 block text-[0.6rem] font-medium uppercase tracking-[0.18em] text-muted">
-              of Balayan, Inc. · Est. 1935
+            <span className="block text-[0.95rem] font-[650] tracking-[0.04em] text-slate sm:text-[1.05rem]">
+              of Balayan, Inc.
             </span>
           </span>
         </Link>
 
-        <div className="flex items-center gap-6 xl:gap-8">
-          <nav aria-label="Primary" className="hidden items-center gap-6 lg:flex xl:gap-7">
+        <nav aria-label="Main" className="hidden xl:block">
+          <ul className="type-ui flex items-center">
             {nav.map((item) => {
-              const active =
-                item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+              if (item.children && item.children.length > 1) {
+                return <Dropdown key={item.label} section={item} pathname={pathname} />;
+              }
+              const href = item.href!;
+              const active = inSection(pathname, item);
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  className={`text-[0.9rem] transition-colors hover:text-blue-mid ${
-                    active
-                      ? "text-ink underline decoration-crest decoration-2 underline-offset-[10px]"
-                      : "text-muted"
-                  }`}
-                >
-                  {item.label}
-                </Link>
+                <li key={href}>
+                  <Link
+                    href={href}
+                    aria-current={pathname === href ? "page" : undefined}
+                    className={`relative block px-3 py-2 font-[550] transition-colors hover:text-royal ${
+                      active ? "text-royal" : "text-slate"
+                    }`}
+                  >
+                    {item.label}
+                    {active ? (
+                      <span aria-hidden className="absolute inset-x-3 -bottom-[1.1rem] h-[3px] bg-crest" />
+                    ) : null}
+                  </Link>
+                </li>
               );
             })}
-          </nav>
+            <li className="ml-3">
+              <Link href="/admissions" className="btn min-h-0 py-2.5">
+                Enroll
+              </Link>
+            </li>
+          </ul>
+        </nav>
 
-          <Link
-            href="/admissions"
-            className="hidden bg-blue px-4 py-2.5 text-[0.82rem] font-medium tracking-wide text-paper transition-colors hover:bg-blue-mid sm:inline-block xl:px-5 xl:py-3"
-          >
-            Inquire
-          </Link>
-
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-expanded={open}
-            aria-controls="mobile-nav"
-            className="flex h-10 w-10 flex-col items-center justify-center gap-[6px] border border-rule text-ink lg:hidden"
-          >
-            <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+        <button
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+          aria-expanded={open}
+          aria-controls="menu"
+          className="type-ui flex h-11 shrink-0 items-center gap-2.5 rounded-[4px] border-2 border-royal px-3 font-[650] text-royal xl:hidden"
+        >
+          <span aria-hidden className="relative block h-3 w-4">
             <span
-              aria-hidden
-              className={`h-px w-5 bg-current transition-transform duration-200 ${open ? "translate-y-[3.5px] rotate-45" : ""}`}
+              className={`absolute left-0 top-0 h-[2px] w-4 bg-current transition-transform duration-200 ${
+                open ? "translate-y-[5px] rotate-45" : ""
+              }`}
             />
             <span
-              aria-hidden
-              className={`h-px w-5 bg-current transition-transform duration-200 ${open ? "-translate-y-[3.5px] -rotate-45" : ""}`}
+              className={`absolute bottom-0 left-0 h-[2px] w-4 bg-current transition-transform duration-200 ${
+                open ? "-translate-y-[5px] -rotate-45" : ""
+              }`}
             />
-          </button>
-        </div>
+          </span>
+          {open ? "Close" : "Menu"}
+        </button>
       </div>
 
-      {open && (
+      {open ? (
         <nav
-          id="mobile-nav"
-          aria-label="Primary"
-          className="border-t border-rule bg-paper px-6 py-4 lg:hidden"
+          id="menu"
+          aria-label="Main"
+          className="max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-facade-line bg-white xl:hidden"
         >
-          <ul>
+          <ul className="wrap py-4">
             {nav.map((item) => (
-              <li key={item.href} className="border-b border-rule/70 last:border-0">
-                <Link
-                  href={item.href}
-                  className="flex items-center justify-between py-3.5 text-[0.95rem] text-ink"
-                >
-                  {item.label}
-                  <span aria-hidden className="text-gold">
-                    {item.href === "/" ? "·" : "→"}
-                  </span>
-                </Link>
+              <li key={item.label} className="row-line first:border-0">
+                {item.children && item.children.length > 1 ? (
+                  <>
+                    <p className="py-3 font-display text-[1.75rem] font-[700] leading-tight text-royal">
+                      {item.label}
+                    </p>
+                    <ul className="type-ui -mt-1 grid gap-x-6 pb-4 sm:grid-cols-2">
+                      {item.children.map((child) => (
+                        <li key={child.href}>
+                          <Link
+                            href={child.href}
+                            aria-current={pathname === child.href ? "page" : undefined}
+                            className="block py-1.5 text-slate hover:text-royal aria-[current=page]:font-[650] aria-[current=page]:text-royal"
+                          >
+                            {child.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : (
+                  <Link
+                    href={item.href!}
+                    aria-current={pathname === item.href ? "page" : undefined}
+                    className="block py-3 font-display text-[1.75rem] font-[700] leading-tight text-royal"
+                  >
+                    {item.label}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
-          <Link
-            href="/admissions"
-            className="mt-4 block bg-blue px-5 py-3 text-center text-[0.85rem] font-medium text-paper"
-          >
-            Inquire
-          </Link>
+          <div className="wrap pb-6">
+            <Link href="/admissions" className="btn w-full">
+              Enroll
+            </Link>
+          </div>
         </nav>
-      )}
+      ) : null}
     </header>
   );
 }

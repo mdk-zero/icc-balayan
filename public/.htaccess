@@ -1,0 +1,50 @@
+# Apache settings for the exported site. `npm run build` copies this file into
+# out/, so it is uploaded with everything else.
+
+DirectoryIndex index.html
+Options -Indexes
+ErrorDocument 404 /404.html
+
+# Addresses from the old WordPress site, so links already shared on Facebook,
+# in search results and in bookmarks land on the matching new page.
+<IfModule mod_alias.c>
+  RedirectMatch 301 ^/history-of-icc/?$ /about/history/
+  RedirectMatch 301 ^/mission-and-vision/?$ /about/mission-and-vision/
+  RedirectMatch 301 ^/core-values/?$ /about/core-values/
+  RedirectMatch 301 ^/school-seal/?$ /about/seal/
+  RedirectMatch 301 ^/accreditations/?$ /about/accreditations/
+  RedirectMatch 301 ^/icc-march/?$ /about/icc-march/
+  RedirectMatch 301 ^/icc-admin-1935-present/?$ /inside-iccbi/administrators/
+  RedirectMatch 301 ^/board-of-trustees/?$ /inside-iccbi/board-of-trustees/
+  RedirectMatch 301 ^/administrative-board/?$ /inside-iccbi/administrative-board/
+  RedirectMatch 301 ^/directory/?$ /inside-iccbi/directory/
+  RedirectMatch 301 ^/blog/?$ /news/
+  RedirectMatch 301 ^/registration-forms/?$ /admissions/
+  RedirectMatch 301 ^/alumni-directory/?$ /alumni/
+  # Inside ICCBI has no page of its own, like the old site's menu.
+  RedirectMatch 301 ^/inside-iccbi/?$ /inside-iccbi/administrators/
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript application/json image/svg+xml
+</IfModule>
+
+# Pages are rechecked on every visit so updates show up straight away. Every
+# script, stylesheet and font is in /_next/static/ with a content hash in its
+# name, so a changed file gets a new name and browsers can keep them for a year.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|txt)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/javascript "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/webp "access plus 1 month"
+  ExpiresByType audio/mpeg "access plus 1 month"
+</IfModule>

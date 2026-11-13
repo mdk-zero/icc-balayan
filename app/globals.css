@@ -97,11 +97,14 @@
   }
 
   /* Display scale. Sofia Sans Extra Condensed is narrow and tall, so it is set
-     larger and tighter than a normal-width face would be at the same rank. */
+     larger and tighter than a normal-width face would be at the same rank.
+     The hero also scales with screen height so the heading, lead and buttons
+     fit above the fold on short laptop screens, and stops at 6.5rem so
+     "of Balayan, Inc." stays on one line in its 38rem column. */
   .type-hero {
     font-family: var(--font-display);
     font-weight: 850;
-    font-size: clamp(3.4rem, 10.5vw, 9.25rem);
+    font-size: clamp(3.4rem, min(8vw, 11vh), 6.5rem);
     line-height: 0.84;
     letter-spacing: -0.01em;
     text-transform: uppercase;

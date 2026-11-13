@@ -37,8 +37,8 @@ export default function HomePage() {
           <div className="max-w-[38rem]">
             <h1 className="type-hero text-royal">
               <span className="rise-line">Immaculate Conception</span>
-              <span className="rise-line">College</span>
-              <span className="rise-line text-slate">of Balayan, Inc.</span>
+              <span className="rise-line">College of</span>
+              <span className="rise-line text-slate">Balayan, Inc.</span>
             </h1>
             <p className="type-lead mt-7 max-w-[34ch] text-slate lg:max-w-[42ch]">
               A Catholic school of the Augustinian Recollect Sisters on Plaza Mabini since 1935.

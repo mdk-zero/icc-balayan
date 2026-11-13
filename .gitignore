@@ -5,3 +5,5 @@ next-env.d.ts
 *.tsbuildinfo
 .DS_Store
 /iccbi-website.zip
+.superpowers/
+/iccbi-feeds/

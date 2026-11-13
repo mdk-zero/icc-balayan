@@ -431,6 +431,22 @@
   animation-delay: 210ms;
 }
 
+/* News page feeds. The Facebook row hides its scrollbar because the arrows,
+   dashes and swipe move it; the YouTube strip keeps a thin one so a mouse can
+   still reach the videos past the fourth. */
+.feed-track {
+  scrollbar-width: none;
+}
+
+.feed-track::-webkit-scrollbar {
+  display: none;
+}
+
+.feed-strip {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-facade) transparent;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

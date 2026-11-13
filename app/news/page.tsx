@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { FacebookSpotlight } from "@/components/facebook-spotlight";
 import { PageHeader } from "@/components/page-header";
+import { YouTubeSpotlight } from "@/components/youtube-spotlight";
 import { formatDate, posts } from "@/lib/news";
 import { links } from "@/lib/site";
 
@@ -15,7 +17,7 @@ export default function NewsPage() {
       <PageHeader
         current="/news"
         title="News and announcements"
-        lead="School notices, events and enrollment dates. The latest also go out on the school's Facebook page."
+        lead="School notices, events and enrollment dates, with the latest from the school’s Facebook page and YouTube channel."
       >
         <div className="flex flex-wrap gap-3">
           <a href={links.facebook} className="btn">
@@ -27,41 +29,38 @@ export default function NewsPage() {
         </div>
       </PageHeader>
 
-      <section aria-label="Posts" className="wrap py-14 lg:py-20">
-        {posts.length === 0 ? (
-          <div className="trim max-w-2xl pt-5">
-            <h2 className="type-sub">No announcements posted here yet</h2>
-            <p className="mt-3 text-slate">
-              Until the first post appears, the school&rsquo;s Facebook page has the
-              latest announcements and enrollment dates.
-            </p>
-            <a href={links.facebook} className="link type-ui mt-4 inline-block font-[600]">
-              facebook.com/ICCBalayanIncOfficial
-            </a>
-          </div>
-        ) : (
-          <ol className="max-w-4xl">
-            {posts.map((post) => (
-              <li key={post.slug} className="row-line first:border-t-[3px] first:border-royal">
-                <Link
-                  href={`/news/${post.slug}`}
-                  className="group grid gap-x-10 gap-y-2 py-7 sm:grid-cols-[10rem_1fr]"
-                >
-                  <time dateTime={post.date} className="type-ui pt-1 text-slate-soft">
-                    {formatDate(post.date)}
-                  </time>
-                  <span>
-                    <span className="type-sub block decoration-2 underline-offset-4 group-hover:underline">
-                      {post.title}
+      <div className="wrap space-y-16 py-14 lg:space-y-24 lg:py-20">
+        <FacebookSpotlight />
+        <YouTubeSpotlight />
+
+        {posts.length > 0 ? (
+          <section aria-labelledby="announcements-heading">
+            <h2 id="announcements-heading" className="type-section">
+              Announcements
+            </h2>
+            <ol className="mt-8 max-w-4xl">
+              {posts.map((post) => (
+                <li key={post.slug} className="row-line first:border-t-[3px] first:border-royal">
+                  <Link
+                    href={`/news/${post.slug}`}
+                    className="group grid gap-x-10 gap-y-2 py-7 sm:grid-cols-[10rem_1fr]"
+                  >
+                    <time dateTime={post.date} className="type-ui pt-1 text-slate-soft">
+                      {formatDate(post.date)}
+                    </time>
+                    <span>
+                      <span className="type-sub block decoration-2 underline-offset-4 group-hover:underline">
+                        {post.title}
+                      </span>
+                      <span className="mt-2 block max-w-[60ch] text-slate">{post.summary}</span>
                     </span>
-                    <span className="mt-2 block max-w-[60ch] text-slate">{post.summary}</span>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ol>
-        )}
-      </section>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ) : null}
+      </div>
     </>
   );
 }

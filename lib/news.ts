@@ -1,6 +1,8 @@
 /**
- * News posts, newest first. The old site's news page pulled from Facebook and
- * has been empty since the access token expired, so this starts empty.
+ * Announcements written for the site itself, newest first. The News page
+ * already shows the school's latest Facebook posts and YouTube videos on its
+ * own (see lib/feeds.ts); these appear below them, under "Announcements",
+ * once there is at least one.
  *
  * To publish a post, add an entry here:
  *

@@ -7,3 +7,5 @@ next-env.d.ts
 /iccbi-website.zip
 .superpowers/
 /iccbi-feeds/
+/deploy.env
+/.deploy/

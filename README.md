@@ -7,6 +7,7 @@ npm install
 npm run dev      # http://localhost:3000
 npm run build
 npm run preview  # http://localhost:8080, with the News page feeds (needs PHP)
+npm run deploy   # build and upload to the server over FTP (see "Deploying with one command")
 npm run typecheck
 ```
 
@@ -118,7 +119,27 @@ The site is exported as plain HTML, CSS, JavaScript and images, so any cPanel ho
 
 **6. Turn on HTTPS.** In **Domains**, switch on **Force HTTPS Redirect** for the domain.
 
-**To update the site later**, edit the files, run `npm run zip` again, then upload and extract the new zip over the old files. Choose to overwrite when asked.
+**To update the site later**, edit the files and run `npm run deploy` (set up below). Without it, run `npm run zip` again, then upload and extract the new zip over the old files, choosing to overwrite when asked.
+
+### Deploying with one command
+
+`npm run deploy` builds the site and uploads it over FTP, encrypted with TLS. It replaces steps 1 and 4 above. After the first time it sends only the files that changed. It deletes a file from the server only if an earlier deploy uploaded it and the new build no longer has it, so anything it didn't put there (`.well-known`, `cgi-bin`, other subdomains' folders, a WordPress backup) is never touched. The hosting plan has no SSH, so FTP is the way in.
+
+**Set it up once.**
+1. In cPanel, open **FTP Accounts** and add an account just for deploying. Log in: `deploy`. Directory: change it to `public_html`, because cPanel fills in `public_html/deploy`. Generate a strong password and keep a copy. This account can only reach `public_html`, so it can't touch the Facebook settings in `iccbi-feeds`.
+2. Install lftp in WSL: `sudo pacman -S lftp`.
+3. Copy `deploy.env.example` to `deploy.env`, fill in the username (`deploy@iccbalayan.edu.ph`) and the password, and run `chmod 600 deploy.env`. Git ignores this file.
+4. Run `npm run deploy -- --check`. It logs in and lists the folder it would deploy to, without changing anything. You should see the site's own files (`index.html`, or WordPress's `wp-content`). If you see `public_html`, `mail` and `etc`, you're logged in with the main cPanel account: set `FTP_DIR=public_html`.
+5. Run `npm run deploy -- --dry-run`. It builds the site and lists what it would upload and delete, without connecting.
+
+**Then, each time,** run `npm run deploy`.
+
+- If it stops partway, run it again. Scripts and images go up, and their sizes on the server are checked, before any page that uses them. Old files are deleted only at the end, so the live site keeps working in the meantime.
+- If it stops with a certificate error, the host has probably moved the account to another server. Set `FTP_HOST` in `deploy.env` to the hostname on cPanel's **Server Information** page.
+- `npm run deploy -- --all` uploads every file, for example after files were changed or deleted in File Manager.
+- The record of what was uploaded is kept in `.deploy/` on this computer. The first deploy from another computer uploads everything once.
+
+The first deploy to `public_html` replaces the WordPress site, so do steps 2 and 5 above first. To try a test subdomain first (step 3), add a second FTP account whose directory is the subdomain's folder and put its login in `deploy.env` while testing.
 
 ## Before launch: content the school must confirm
 
